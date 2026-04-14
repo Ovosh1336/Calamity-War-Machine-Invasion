@@ -1,0 +1,5 @@
+displayName = Calamity: War Machine Invasion
+author = ShizaArta
+version = 0.1.2
+
+dependencies = "required:CalamityMod"

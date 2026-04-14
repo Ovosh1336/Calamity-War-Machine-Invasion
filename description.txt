@@ -1,0 +1,14 @@
+War Machine Invasion
+This is a small addon for the Calamity Mod, designed to expand pre-Hardmode gameplay and delve deeper into the lore of the Wulfrum machines.
+
+Current content:
+1 new Boss
+3 new NPCs
+1 new Weapon
+5+ new Items
+
+Boss Battle Theme:
+Mechanism Warfare — by Digidonix
+
+A Note from the Developer:
+This is my very first solo project, so please go easy on me!

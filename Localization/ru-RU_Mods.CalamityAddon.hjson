@@ -1,0 +1,99 @@
+# This file will automatically update with entries for new content after a build and reload.
+
+Items: {
+	WulfrumSword: {
+		DisplayName: Вульфрумовый меч
+		Tooltip:
+			'''
+			Template of an item
+			Replacing this tooltip is duty 
+			It's snowing on Mt.Fuji
+			'''
+	}
+
+	WulfrumPipe: {
+		DisplayName: Вульфрумовая труба
+		Tooltip: Бывшее танковое орудие
+	}
+
+	WulfrumLRocket: {
+		DisplayName: Вульфрумовая ракета
+		Tooltip: Самонаводится на противников
+	}
+
+	WulfrumLuncher: {
+		DisplayName: Вульфрумовый раекетомет
+		Tooltip: Он намного мощнее чем вы думаете
+	}
+
+	WulfrumTankBanner: {
+		DisplayName: Знамя вульфрумового танка
+		// Tooltip: ""
+	}
+
+	WulfrumWormBanner: {
+		DisplayName: Знамя вульфрумового копателя
+		// Tooltip: ""
+	}
+
+	WulfrumMothershipRelic: {
+		DisplayName: Реликвия вульфрумового корабля-носителя
+		// Tooltip: ""
+	}
+
+	WulfrumHeart: {
+		Tooltip:
+			'''
+			Призывает вульфрумовый корабль-носитель
+			Не расходуется
+			'''
+		DisplayName: Вульфрумовое сердце
+	}
+
+	WulfrumMothershipBag: {
+		// Tooltip: ""
+		DisplayName: Вульфрумовая сфера
+	}
+
+	Lore: {
+		LoreWulfrumMothership: {
+			Tooltip:
+				'''
+				Во время войны эти величественные машины были в отличном состоянии,
+				Имели мощную защиту и высокую маневренность, но время не щадит никого... 
+				Несмотря на то, что вульфрумовые носители давно проржавели, это не мешает им и по сей день, 
+				Оставаться грозным противником, которого все так же защищают более простые вульфрумовые создания.
+				'''
+			DisplayName: История (Вульфрумовый Носитель)
+		}
+	}
+}
+
+NPCs: {
+	WulfrumTank: {
+		DisplayName: Вульфрумовый танк
+		Bestiary: Бронированный патрульный танк из сплава вульфрума. Хотя данные машины были давольно просты, в тоже время они были очень эффетивны на поле битвы.
+	}
+
+	WulfrumWormBody.DisplayName: Вульфрумовый копатель
+
+	WulfrumWormHead: {
+		DisplayName: Вульфрумовый копатель
+		Bestiary: Данные вульфрумовые копатели использовались для того чтобы быстро прорывать тоннели сквозь скалы, но когда началась война, высокая защита и скорость превратили их в грозных противников.
+	}
+
+	WulfrumWormTail.DisplayName: Вульфрумовый копатель
+
+	WulfrumMothership: {
+		DisplayName: Вульфрумовый носитель
+		Bestiary: Огромный вульфрумовый корабль-носитель, координирующий действия вульфрумовых машин. Вооружен самонаводящимися ракетами и генератором щита. Имеет возможность заряжать другие вульфрумовые машины.
+	}
+
+	WulfrumShield.DisplayName: Вульфрумовый носитель
+}
+
+Projectiles: {
+	WulfrumRocket.DisplayName: Вульфрумовая ракета
+	WulfrumLRocketProj.DisplayName: Вульфрумовая ракета
+	// SplashProjectile.DisplayName: Splash Projectile
+}

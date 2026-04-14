@@ -1,0 +1,95 @@
+# This file will automatically update with entries for new content after a build and reload.
+
+Items: {
+	WulfrumSword: {
+		DisplayName: Wulfrum Sword
+		Tooltip:
+			'''
+			Template of an item
+			Replacing this tooltip is duty 
+			It's snowing on Mt.Fuji
+			'''
+	}
+
+	WulfrumPipe: {
+		DisplayName: Wulfrum Pipe
+		Tooltip: It was a tank gun
+	}
+
+	WulfrumLRocket: {
+		DisplayName: Wulfrum Rocket
+		Tooltip: With auto-aim
+	}
+
+	WulfrumLuncher: {
+		DisplayName: Wulfrum Luncher
+		Tooltip: This is more powerful than you think
+	}
+
+	WulfrumTankBanner: {
+		DisplayName: Wulfrum Tank Banner
+		Tooltip: ""
+	}
+
+	WulfrumWormBanner: {
+		DisplayName: Wulfrum Digger Banner
+		Tooltip: ""
+	}
+
+	WulfrumMothershipRelic: {
+		DisplayName: Wulfrum Mothership Relic
+		Tooltip: ""
+	}
+
+	WulfrumHeart: {
+		Tooltip: ""
+		DisplayName: Wulfrum Heart
+	}
+
+	WulfrumMothershipBag: {
+		Tooltip: ""
+		DisplayName: Wulfrum Sphere
+	}
+
+	Lore: {
+		LoreWulfrumMothership: {
+			Tooltip:
+				'''
+				During the war, these majestic machines were in peak condition, 
+				Boasting heavy armor and high maneuverability, but time spares no one... 
+				Even though these Wulfrum Motherships have long since rusted over, 
+				They remain a formidable foe to this day, still protected by lesser wulfrum creations.
+				'''
+			DisplayName: Lore (Wulfrum Mothership)
+		}
+	}
+}
+
+NPCs: {
+	WulfrumTank: {
+		DisplayName: Wulfrum Tank
+		Bestiary: An armored patrol tank made of Wulfrum alloy. While these machines were relatively simple, they were very effective on the battlefield.
+	}
+
+	WulfrumWormBody.DisplayName: Wulfrum Digger
+
+	WulfrumWormHead: {
+		DisplayName: Wulfrum Digger
+		Bestiary: These Wulfrum diggers were used to quickly tunnel through rock, but when the war began, their high armor and speed made them formidable opponents.
+	}
+
+	WulfrumWormTail.DisplayName: Wulfrum Digger
+
+	WulfrumMothership: {
+		DisplayName: Wulfrum Mothership
+		Bestiary: A massive mothership that coordinates the actions of Wulfrum machines. Armed with homing missiles and a shield generator, it can also charge other Wulfrum machines.
+	}
+
+	WulfrumShield.DisplayName: Wulfrum Mothership
+}
+
+Projectiles: {
+	WulfrumRocket.DisplayName: Wulfrum Rocket
+	WulfrumLRocketProj.DisplayName: Wulfrum L Rocket Proj
+	SplashProjectile.DisplayName: Splash Projectile
+}
