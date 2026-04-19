@@ -41,6 +41,7 @@ namespace CalamityAddon.Content.NPCs
             NPC.height = 44;
             NPC.defense = 7;
             NPC.lifeMax = 70;
+            NPC.knockBackResist = 0.3f;
             NPC.value = Item.buyPrice(0, 0, 1, 25);
             NPC.HitSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumHit", 3);
             NPC.DeathSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumDeath");
@@ -184,9 +185,38 @@ namespace CalamityAddon.Content.NPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
+            if (ModLoader.TryGetMod("CalamityMod", out Mod calamity))
+            {
+                // Ищем ID указанных стен в файлах Calamity
+                calamity.TryFind<ModWall>("SulphurousSand", out var wall1);
+                calamity.TryFind<ModWall>("SulphurousSandWall", out var wall2);
+                calamity.TryFind<ModWall>("SulphurousSandstone", out var wall3);
+
+                int tileX = spawnInfo.SpawnTileX;
+                int tileY = spawnInfo.SpawnTileY;
+
+                // Проверяем область 10x10 тайлов вокруг точки спавна
+                for (int i = -5; i < 5; i++)
+                {
+                    for (int j = -5; j < 5; j++)
+                    {
+                        // Проверка на границы мира, чтобы не было ошибок
+                        if (WorldGen.InWorld(tileX + i, tileY + j))
+                        {
+                            ushort currentWall = Main.tile[tileX + i, tileY + j].WallType;
+
+                            if ((wall1 != null && currentWall == wall1.Type) ||
+                                (wall2 != null && currentWall == wall2.Type) ||
+                                (wall3 != null && currentWall == wall3.Type))
+                            {
+                                return 0f;
+                            }
+                        }
+                    }
+                }
+            }
             return SpawnCondition.OverworldDaySlime.Chance * 0.1f;
         }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.dedServ) return;

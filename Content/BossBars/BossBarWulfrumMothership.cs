@@ -24,13 +24,6 @@ namespace CalamityAddon.Content.BossBars
             life = npc.life;
             lifeMax = npc.lifeMax;
 
-            // Получаем данные щита из босса
-            if (npc.ModNPC is WulfrumMothership mothership)
-            {
-                shield = mothership.GetShieldHP();
-                shieldMax = mothership.GetShieldMaxHP();
-            }
-
             return true;
         }
     }

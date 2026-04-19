@@ -68,13 +68,13 @@ namespace CalamityAddon.Content.NPCs
 
             if (Main.expertMode)
             {
-                minLen = 12;
-                maxLen = 12;
+                minLen = 10;
+                maxLen = 10;
             }
             else if (Main.masterMode)
             {
-                minLen = 16;
-                maxLen = 16;
+                minLen = 14;
+                maxLen = 14;
             }
 
             MinSegmentLength = minLen;
@@ -183,6 +183,37 @@ namespace CalamityAddon.Content.NPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
+            // Пытаемся получить доступ к Calamity Mod
+            if (ModLoader.TryGetMod("CalamityMod", out Mod calamity))
+            {
+                // Ищем ID указанных стен в файлах Calamity
+                calamity.TryFind<ModWall>("SulphurousShaleWall", out var wall1);
+                calamity.TryFind<ModWall>("SulphurousSandWall", out var wall2);
+                calamity.TryFind<ModWall>("SulphurousSandstoneWall", out var wall3);
+
+                int tileX = spawnInfo.SpawnTileX;
+                int tileY = spawnInfo.SpawnTileY;
+
+                // Проверяем область 10x10 тайлов вокруг точки спавна
+                for (int i = -5; i < 5; i++)
+                {
+                    for (int j = -5; j < 5; j++)
+                    {
+                        // Проверка на границы мира, чтобы не было ошибок
+                        if (WorldGen.InWorld(tileX + i, tileY + j))
+                        {
+                            ushort currentWall = Main.tile[tileX + i, tileY + j].WallType;
+
+                            if ((wall1 != null && currentWall == wall1.Type) ||
+                                (wall2 != null && currentWall == wall2.Type) ||
+                                (wall3 != null && currentWall == wall3.Type))
+                            {
+                                return 0f;
+                            }
+                        }
+                    }
+                }
+            }
             return SpawnCondition.Underground.Chance * 0.05f;
         }
 

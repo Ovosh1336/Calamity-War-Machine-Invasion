@@ -21,7 +21,7 @@ namespace CalamityAddon.Content.Items.Weapons
             Item.DamageType = DamageClass.Ranged;
             Item.knockBack = 3f;
             Item.useTime = 34;
-            Item.useAnimation = 38;
+            Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.autoReuse = true;

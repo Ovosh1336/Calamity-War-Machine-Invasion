@@ -27,21 +27,6 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
     [AutoloadBossHead]
     public class WulfrumMothership : ModNPC
     {
-        // === ЩИТ ===
-        private int ShieldMaxHP;
-        private const int ShieldRegenDelay = 1200;
-        private int ShieldHP;
-        private int ShieldRegenTimer = 0;
-        private bool ShieldActive => ShieldHP > 0;
-
-        public float GetShieldHP() => ShieldHP;
-        public float GetShieldMaxHP() => ShieldMaxHP;
-
-        // === ШЕЙДЕР ===
-        private static Effect shieldEffect;
-        private static bool shieldEffectLoaded = false;
-        private static Asset<Texture2D> noiseTex;
-
         // === SUPERCHARGE ===
         private const int SuperchargeTime = 600;
         private const int ChargeRadiusMax = 800;
@@ -82,9 +67,9 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
         {
             NPC.width = 88;
             NPC.height = 62;
-            NPC.damage = 30;
+            NPC.damage = 40;
             NPC.defense = 15;
-            NPC.lifeMax = 2000;
+            NPC.lifeMax = 2500;
 
             NPC.HitSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumHit", 3);
             NPC.DeathSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumDeath");
@@ -98,17 +83,6 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             NPC.noTileCollide = true;
 
             NPC.BossBar = ModContent.GetInstance<BossBarWulfrumMothership>();
-
-            if (Main.getGoodWorld)
-                ShieldMaxHP = 500;
-            else if (Main.masterMode)
-                ShieldMaxHP = 400;
-            else if (Main.expertMode)
-                ShieldMaxHP = 300;
-            else
-                ShieldMaxHP = 200;
-
-            ShieldHP = ShieldMaxHP;
 
             if (!Main.dedServ) {
                 Music = MusicLoader.GetMusicSlot(Mod, "Content/Sounds/Music/MechanismWarfare");
@@ -128,8 +102,6 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
         // === СИНХРОНИЗАЦИЯ ДЛЯ МУЛЬТИПЛЕЕРА ===
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(ShieldHP);
-            writer.Write(ShieldRegenTimer);
             writer.Write(phase2SpawnTimer);
             writer.Write(wormSpawnTimer);
             writer.Write(phase2Triggered);
@@ -138,189 +110,10 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            ShieldHP = reader.ReadInt32();
-            ShieldRegenTimer = reader.ReadInt32();
             phase2SpawnTimer = reader.ReadInt32();
             wormSpawnTimer = reader.ReadInt32();
             phase2Triggered = reader.ReadBoolean();
             phase3Triggered = reader.ReadBoolean();
-        }
-
-        private static void LoadShieldEffect(Mod mod)
-        {
-            if (shieldEffectLoaded) return;
-            shieldEffectLoaded = true;
-
-            try
-            {
-                shieldEffect = mod.Assets.Request<Effect>(
-                    "Content/Effects/RoverDriveShield",
-                    AssetRequestMode.ImmediateLoad
-                ).Value;
-            }
-            catch
-            {
-                shieldEffect = null;
-            }
-        }
-
-        public override void Unload()
-        {
-            shieldEffect = null;
-            shieldEffectLoaded = false;
-            noiseTex = null;
-        }
-
-        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
-        {
-            if (ShieldActive)
-            {
-                // Используем исходный урон ДО модификации
-                int actualDamage = (int)hit.Damage;
-                ApplyDamageToShield(actualDamage);
-            }
-        }
-
-        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
-        {
-            if (ShieldActive)
-            {
-                // Используем исходный урон ДО модификации
-                int actualDamage = (int)hit.Damage;
-                ApplyDamageToShield(actualDamage);
-            }
-        }
-
-        private void ApplyDamageToShield(int damage)
-        {
-            // Только сервер/синглплеер обрабатывает урон
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-                return;
-
-            ShieldHP -= damage;
-
-            if (ShieldHP <= 0)
-            {
-                ShieldHP = 0;
-                ShieldRegenTimer = ShieldRegenDelay;
-                SoundEngine.PlaySound(new SoundStyle("CalamityAddon/Content/Sounds/RoverDriveBreak"), NPC.Center);
-            }
-            else
-            {
-                // Звук попадания по щиту
-                SoundEngine.PlaySound(SoundID.NPCHit4 with { Volume = 0.5f, Pitch = 0.3f }, NPC.Center);
-            }
-
-            // Визуальный эффект попадания
-            if (!Main.dedServ)
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    Vector2 speed = Main.rand.NextVector2Circular(2f, 2f);
-                    Dust d = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height) * 0.5f, 
-                        DustID.Electric, speed, Scale: 1.5f);
-                    d.noGravity = true;
-                }
-            }
-
-            NPC.netUpdate = true;
-        }
-
-        private void UpdateShield()
-        {
-            // Только сервер/синглплеер обновляет регенерацию
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-                return;
-
-            if (!ShieldActive)
-            {
-                ShieldRegenTimer--;
-                if (ShieldRegenTimer <= 0)
-                {
-                    ShieldHP = ShieldMaxHP;
-                    ShieldRegenTimer = 0;
-                    SoundEngine.PlaySound(new SoundStyle("CalamityAddon/Content/Sounds/RoverDriveActivate"), NPC.Center);
-
-                    // Визуальный эффект восстановления
-                    if (!Main.dedServ)
-                    {
-                        for (int i = 0; i < 20; i++)
-                        {
-                            float angle = MathHelper.TwoPi * i / 20f;
-                            Vector2 pos = NPC.Center + angle.ToRotationVector2() * 60f;
-                            Dust d = Dust.NewDustPerfect(pos, DustID.Vortex, 
-                                (NPC.Center - pos).SafeNormalize(Vector2.Zero) * 3f);
-                            d.noGravity = true;
-                            d.scale = 1.2f;
-                        }
-                    }
-
-                    NPC.netUpdate = true;
-                }
-            }
-        }
-
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            if (!ShieldActive) return;
-
-            LoadShieldEffect(Mod);
-
-            if (shieldEffect == null) return;
-
-            float healthRatio = (float)ShieldHP / ShieldMaxHP;
-
-            if (noiseTex == null)
-            {
-                try
-                {
-                    noiseTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/TechyNoise");
-                }
-                catch
-                {
-                    return;
-                }
-            }
-
-            shieldEffect.Parameters["time"]?.SetValue(Main.GlobalTimeWrappedHourly * 0.24f);
-            shieldEffect.Parameters["blowUpPower"]?.SetValue(2.5f);
-            shieldEffect.Parameters["blowUpSize"]?.SetValue(0.5f);
-            shieldEffect.Parameters["noiseScale"]?.SetValue(0.5f);
-
-            float baseShieldOpacity = 0.9f + 0.1f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 2f);
-            shieldEffect.Parameters["shieldOpacity"]?.SetValue(baseShieldOpacity * healthRatio);
-            shieldEffect.Parameters["shieldEdgeBlendStrenght"]?.SetValue(4f);
-
-            Color greenTint = new Color(100, 255, 180);
-            Color cyanTint = new Color(71, 202, 255);
-            Color wulfGreen = new Color(194, 255, 67);
-
-            float t = Main.GlobalTimeWrappedHourly * 0.2f % 1f;
-            Color edgeColor;
-            if (t < 0.33f)
-                edgeColor = Color.Lerp(greenTint, cyanTint, t / 0.33f);
-            else if (t < 0.66f)
-                edgeColor = Color.Lerp(cyanTint, wulfGreen, (t - 0.33f) / 0.33f);
-            else
-                edgeColor = Color.Lerp(wulfGreen, greenTint, (t - 0.66f) / 0.34f);
-
-            shieldEffect.Parameters["shieldColor"]?.SetValue(greenTint.ToVector3());
-            shieldEffect.Parameters["shieldEdgeColor"]?.SetValue(edgeColor.ToVector3());
-
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive,
-                Main.DefaultSamplerState, DepthStencilState.None,
-                Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-
-            Texture2D tex = noiseTex.Value;
-            Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - screenPos;
-            float scale = NPC.scale * 0.25f;
-            spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
-                Main.DefaultSamplerState, DepthStencilState.None,
-                Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
         private bool IsRevengeance()
@@ -414,8 +207,6 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
                 Lighting.AddLight(NPC.Center, 0.2f, 0.8f, 1f);
             else
                 Lighting.AddLight(NPC.Center, 0.1f, 0.5f, 0.1f);
-
-            UpdateShield();
 
             if (isSecondPhase)
                 UpdateSuperchargeField();
@@ -811,7 +602,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             int laserCount = 5;
             float maxAngle = MathHelper.ToRadians(20f);
             float speed = 6f;
-            int damage = Main.masterMode ? 8 : Main.expertMode ? 9 : 12;
+            int damage = Main.masterMode ? 10 : Main.expertMode ? 11 : 14;
 
             float shipWidth = NPC.width - 20f;
 
@@ -894,15 +685,15 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             Vector2 spawnPosition = NPC.Center + offset;
             
             float speedMult = isSecondPhase ? 1.3f : 1.0f;
-            float launchSpeedX = 6f * speedMult;
-            float launchSpeedY = 8f * speedMult;
+            float launchSpeedX = 8f * speedMult;
+            float launchSpeedY = 9f * speedMult;
             
             Vector2 velocity = new Vector2(-launchSpeedX * NPC.spriteDirection, -launchSpeedY);
             float spread = isSecondPhase ? 20f : 15f;
             velocity = velocity.RotatedByRandom(MathHelper.ToRadians(spread));
             velocity *= Main.rand.NextFloat(0.9f, 1.1f);
             
-            int damage = 15;
+            int damage = 20;
             Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, velocity, 
                 ModContent.ProjectileType<WulfrumRocket>(), damage, 2f, Main.myPlayer);
             

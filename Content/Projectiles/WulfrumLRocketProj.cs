@@ -21,10 +21,11 @@ namespace CalamityAddon.Content.Projectiles
             Projectile.hostile = false;
             Projectile.tileCollide = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 200;
+            Projectile.timeLeft = 240;
         }
         
         private int frameCounter = 0;
+        private const float HomingDuration = 170f;
 
         public override void AI()
         {
@@ -39,7 +40,7 @@ namespace CalamityAddon.Content.Projectiles
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 3f;
                 }
             }
-            else
+            else if (Projectile.ai[0] < HomingDuration) // Наведение работает только первые 2.5 секунды
             {
                 // Ищем ближайшего ВРАГА (NPC, а не игрока)
                 NPC target = FindClosestNPC();
@@ -49,11 +50,12 @@ namespace CalamityAddon.Content.Projectiles
                     toTarget.Normalize();
 
                     float homingStrength = 0.08f;
-                    float desiredSpeed = 7f;
+                    float desiredSpeed = 8f;
 
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, toTarget * desiredSpeed, homingStrength);
                 }
             }
+            // После 2.5 секунд ракета летит прямо без наведения
             
             // Проверяем столкновение с врагами
             for (int i = 0; i < Main.maxNPCs; i++)
@@ -66,7 +68,6 @@ namespace CalamityAddon.Content.Projectiles
                 }
             }
             
-            // Анимация кадров
             frameCounter++;
             if (frameCounter >= 5)
             {
@@ -78,7 +79,6 @@ namespace CalamityAddon.Content.Projectiles
                 }
             }
 
-            // Effects
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             if (Main.rand.NextBool(2)) // 50% шанс каждый кадр
