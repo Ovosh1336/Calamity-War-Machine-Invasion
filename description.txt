@@ -4,11 +4,14 @@ This is a small addon for the Calamity Mod, designed to expand pre-Hardmode game
 Current content:
 1 new Boss
 3 new NPCs
-1 new Weapon
-5+ new Items
+4 new Weapons
+10+ new Items
 
 Boss Battle Theme:
 Mechanism Warfare — by Digidonix
 
+Future Plans:
+I plan to add more weapons, items, and accessories in future updates.
+
 A Note from the Developer:
-This is my very first solo project, so please go easy on me!
+This is my very first project, so please go easy on me!

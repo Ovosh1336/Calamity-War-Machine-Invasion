@@ -5,8 +5,8 @@ This is a small addon for the Calamity Mod, designed to expand pre-Hardmode game
 [list]
 [*]1 new Boss
 [*]3 new NPCs
-[*]1 new Weapon
-[*]5+ new Items
+[*]4 new Weapons
+[*]10+ new Items
 [/list]
 [u]Boss Battle Theme: [/u]
 Mechanism Warfare — by Digidonix
@@ -15,7 +15,10 @@ Mechanism Warfare — by Digidonix
 I plan to add more weapons, items, and accessories in future updates.
 
 [u]A Note from the Developer: [/u]
-[i]This is my very first solo project, so please go easy on me![/i]
+[i]This is my very first project, so please go easy on me![/i]
 [i]If you have any suggestions for improvements, ideas for new content, or if you simply enjoyed the mod, please leave your feedback in the comments.[/i]
 
-[b]Stay tuned for more! [/b]
+[u]Links:[/u]
+GitHub - [url=https://github.com/dakk2662-cyber/Calamity-War-Machine-Invasion][/url]
+
+[b]Stay tuned for more!
