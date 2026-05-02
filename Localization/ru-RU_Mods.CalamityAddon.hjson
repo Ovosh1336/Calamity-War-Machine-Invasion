@@ -5,9 +5,10 @@ Items: {
 		DisplayName: Вульфрумовый меч
 		Tooltip:
 			'''
-			Template of an item
-			Replacing this tooltip is duty 
-			It's snowing on Mt.Fuji
+			Заряжается по мере нанесения урона врагу
+			После полной зарядки позволяет совершить рывок на ПКМ
+			[c/83B87E:'Огромный вульфрумовый меч!? Ещё и заряжается!?']
+			[c/83B87E:'Конечно хочу!']
 			'''
 	}
 
@@ -23,7 +24,7 @@ Items: {
 
 	WulfrumLuncher: {
 		DisplayName: Вульфрумовый раекетомет
-		Tooltip: Он намного мощнее чем вы думаете
+		Tooltip: "[c/83B87E:'Он намного мощнее чем вы думаете.']"
 	}
 
 	WulfrumTankBanner: {
@@ -51,7 +52,7 @@ Items: {
 	}
 
 	WulfrumMothershipBag: {
-		// Tooltip: ""
+		Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
 		DisplayName: Вульфрумовая сфера
 	}
 
@@ -66,6 +67,25 @@ Items: {
 				'''
 			DisplayName: История (Вульфрумовый Носитель)
 		}
+	}
+
+	WulfrumBook: {
+		DisplayName: Вульфрумовая книга
+		Tooltip:
+			'''
+			Создает вульфрумовые машины используя ману
+			[c/83B87E:'Сборка и эксплуатация вульфрумовых механизмов.]
+			[c/83B87E:Что может быть круче?']
+			'''
+	}
+
+	WulfrumStaff: {
+		DisplayName: Вульфрумовый посох
+		Tooltip:
+			'''
+			Призывает турель защищающую вас
+			[c/83B87E:'Такая мощная и милая!]
+			'''
 	}
 }
 
@@ -87,13 +107,27 @@ NPCs: {
 	WulfrumMothership: {
 		DisplayName: Вульфрумовый носитель
 		Bestiary: Огромный вульфрумовый корабль-носитель, координирующий действия вульфрумовых машин. Вооружен самонаводящимися ракетами и генератором щита. Имеет возможность заряжать другие вульфрумовые машины.
+		SpawnInfo: Используй [i:CalamityAddon/WulfrumHeart] днём на поверхности.
+		DespawnMessage: Вульфрумовый Носитель отступил...
 	}
 
 	WulfrumShield.DisplayName: Вульфрумовый носитель
 }
 
+# BossSpawnInfo.CalamityAddon.WulfrumMothership: Use a [i:CalamityAddon/WulfrumHeart] during the day on the surface.
+# BossDespawnMessage.CalamityAddon.WulfrumMothership: The Wulfrum Mothership has retreated...
+
 Projectiles: {
 	WulfrumRocket.DisplayName: Вульфрумовая ракета
 	WulfrumLRocketProj.DisplayName: Вульфрумовая ракета
-	// SplashProjectile.DisplayName: Splash Projectile
+	WulfrumMachineProj.DisplayName: Вульфрумовая машина
+	WulfrumTurret.DisplayName: Вульфрумовая турель
+	WulfrumMinis.DisplayName: Вульфрумовые мины
+}
+
+Buffs: {
+	WulfrumTurretBuff: {
+		DisplayName: Вульфрумовая турель
+		Description: Вас защищает вульфрумовая турель
+	}
 }
