@@ -114,9 +114,6 @@ NPCs: {
 	WulfrumShield.DisplayName: Вульфрумовый носитель
 }
 
-# BossSpawnInfo.CalamityAddon.WulfrumMothership: Use a [i:CalamityAddon/WulfrumHeart] during the day on the surface.
-# BossDespawnMessage.CalamityAddon.WulfrumMothership: The Wulfrum Mothership has retreated...
-
 Projectiles: {
 	WulfrumRocket.DisplayName: Вульфрумовая ракета
 	WulfrumLRocketProj.DisplayName: Вульфрумовая ракета
