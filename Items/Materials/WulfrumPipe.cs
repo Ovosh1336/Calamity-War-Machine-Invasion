@@ -6,11 +6,6 @@ namespace CalamityAddon.Content.Items.Materials
 {
     public class WulfrumPipe : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            // Здесь можно задать DisplayName / Tooltip через локализацию
-        }
-
         public override void SetDefaults()
         {
             Item.width = 24;

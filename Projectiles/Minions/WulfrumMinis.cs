@@ -32,7 +32,7 @@ namespace CalamityAddon.Content.Projectiles.Minions
         {
             Projectile.rotation += Projectile.velocity.X * 0.05f;
 
-            Projectile.velocity.Y += 0.1f; // Гравитация
+            Projectile.velocity.Y += 0.1f;
             if (Projectile.velocity.Y > 18f) Projectile.velocity.Y = 18f;
 
             if (Main.rand.NextBool(3))
@@ -43,10 +43,8 @@ namespace CalamityAddon.Content.Projectiles.Minions
             }
         }
 
-        // Этот метод срабатывает при ударе о блоки
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            // Возвращаем true, чтобы снаряд уничтожился и вызвался метод Kill()
             return true; 
         }
 
@@ -59,6 +57,14 @@ namespace CalamityAddon.Content.Projectiles.Minions
                 int dustIndex = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1.5f);
                 Main.dust[dustIndex].velocity *= 1.4f;
             }
+
+            for (int i = 0; i < 15; i++)
+            {
+                Vector2 dustVel = Main.rand.NextVector2Circular(8f, 8f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch,
+                    dustVel.X, dustVel.Y, 100, default, 1.5f);
+            }
+            
             for (int k = 0; k < 20; k++)
             {
                 int dustIndex = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GrassBlades, 0f, 0f, 100, default, 1f);

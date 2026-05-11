@@ -47,7 +47,6 @@ namespace CalamityAddon.Content.NPCs
             NPC.DeathSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumDeath");
 
             Banner = Type;
-			// These lines are only needed in the main body part.
 			BannerItem = ModContent.ItemType<WulfrumTankBanner>();
 			ItemID.Sets.KillsToBanner[BannerItem] = 50;
         }
@@ -75,11 +74,9 @@ namespace CalamityAddon.Content.NPCs
             if (supercharged)
             {
                 NPC.ai[3]--;
-                // Свечение при суперзаряде
                 Lighting.AddLight(NPC.Center, 0.4f, 1f, 0.3f);
             }
 
-            // Параметры зависят от суперзаряда
             float moveSpeed = supercharged ? MaxMovementSpeedX * 1.5f : MaxMovementSpeedX;
             float stopDist = supercharged ? 450f : 320f;
             int rocketDamage = supercharged ? 15 : 8;
@@ -127,12 +124,10 @@ namespace CalamityAddon.Content.NPCs
                 }
             }
 
-            // Гравитация
             NPC.velocity.Y += 0.3f;
             if (NPC.velocity.Y > 10f)
                 NPC.velocity.Y = 10f;
 
-            // Подъём на ступеньки
             if (Math.Abs(NPC.velocity.X) > 0.5f)
             {
                 NPC.stairFall = true;
@@ -187,7 +182,6 @@ namespace CalamityAddon.Content.NPCs
         {
             if (ModLoader.TryGetMod("CalamityMod", out Mod calamity))
             {
-                // Ищем ID указанных стен в файлах Calamity
                 calamity.TryFind<ModWall>("SulphurousSand", out var wall1);
                 calamity.TryFind<ModWall>("SulphurousSandWall", out var wall2);
                 calamity.TryFind<ModWall>("SulphurousSandstone", out var wall3);
@@ -195,12 +189,10 @@ namespace CalamityAddon.Content.NPCs
                 int tileX = spawnInfo.SpawnTileX;
                 int tileY = spawnInfo.SpawnTileY;
 
-                // Проверяем область 10x10 тайлов вокруг точки спавна
                 for (int i = -5; i < 5; i++)
                 {
                     for (int j = -5; j < 5; j++)
                     {
-                        // Проверка на границы мира, чтобы не было ошибок
                         if (WorldGen.InWorld(tileX + i, tileY + j))
                         {
                             ushort currentWall = Main.tile[tileX + i, tileY + j].WallType;

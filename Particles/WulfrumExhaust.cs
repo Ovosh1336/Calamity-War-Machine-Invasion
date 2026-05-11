@@ -16,7 +16,7 @@ namespace CalamityAddon.Content.Particles
         public int Life;
         public int MaxLife;
         public bool Active;
-        public float Rotation; // <--- ДОБАВЬ
+        public float Rotation;
     }
 
     public class WulfrumExhaustSystem : ModSystem

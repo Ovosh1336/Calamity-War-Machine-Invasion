@@ -54,7 +54,6 @@ namespace CalamityAddon.Content.Projectiles
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, toTarget * desiredSpeed, homingStrength);
                 }
             }
-            // После 2.5 секунд ракета больше не наводится и летит по текущей траектории
 
             for (int i = 0; i < Main.maxPlayers; i++)
             {

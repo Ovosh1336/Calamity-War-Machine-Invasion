@@ -112,6 +112,20 @@ namespace CalamityAddon.Content.NPCs
                 Acceleration = 0.07f;
                 NPC.damage = 15;
 
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    attackCounter--;
+                    if (attackCounter <= 0)
+                    {
+                        Player player = Main.player[NPC.target];
+                        if (player.active && !player.dead && NPC.Distance(player.Center) < 800f)
+                        {
+                            ShootLaser();
+                            attackCounter = 150; 
+                        }
+                    }
+                }
+
                 PropagateSupercharge();
             }
             else
@@ -119,15 +133,24 @@ namespace CalamityAddon.Content.NPCs
                 MoveSpeed = 5f;
                 Acceleration = 0.045f;
                 NPC.damage = 8;
+                attackCounter = 30; 
             }
+        }
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (attackCounter > 0)
-                    attackCounter--;
+        private void ShootLaser()
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient) return;
 
-                Player target = Main.player[NPC.target];
-            }
+            float speed = 6f;
+            int damage = Main.masterMode ? 10 : Main.expertMode ? 11 : 14;
+
+            Vector2 spawnPos = NPC.Center;
+
+            Vector2 laserVelocity = NPC.velocity.SafeNormalize(Vector2.UnitY) * speed;
+
+            Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPos, laserVelocity, ProjectileID.SaucerLaser, damage, 0f);
+
+            SoundEngine.PlaySound(SoundID.Item12, NPC.Center);
         }
 
         private void PropagateSupercharge()

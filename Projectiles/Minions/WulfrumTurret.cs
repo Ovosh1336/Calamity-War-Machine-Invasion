@@ -12,14 +12,12 @@ namespace CalamityAddon.Content.Projectiles.Minions
 {
     public class WulfrumTurret : ModProjectile
     {
-        // ========== КОНСТАНТЫ ==========
         private const float DetectionRange = 600f;
-        private const float MaxDistanceToPlayer = 1200f; // Дистанция возврата (как у Droid)
+        private const float MaxDistanceToPlayer = 1200f;
         private const int ShotsPerBurst = 2;
         private const int TimeBetweenShots = 14;
         private const int CooldownAfterBurst = 100;
         private const float ProjectileSpeed = 14f;
-
         private const float ShootOffsetX = 12f;
         private const float ShootOffsetY = 0f;
 
@@ -70,7 +68,6 @@ namespace CalamityAddon.Content.Projectiles.Minions
                 Projectile.timeLeft = 2;
             }
 
-            // ПРОВЕРКА ДИСТАНЦИИ ДО ИГРОКА (Механика возврата)
             if (currentTarget != null) {
                 float distToPlayer = Vector2.Distance(owner.Center, currentTarget.Center);
                 if (!currentTarget.active || currentTarget.life <= 0 || distToPlayer > MaxDistanceToPlayer) {
@@ -223,7 +220,6 @@ namespace CalamityAddon.Content.Projectiles.Minions
         }
 
         private NPC FindClosestEnemy(Player owner, float maxDistance) {
-            // ФИКС МЕТКИ
             if (owner.MinionAttackTargetNPC != -1) {
                 NPC npc = Main.npc[owner.MinionAttackTargetNPC];
                 if (npc.CanBeChasedBy(Projectile) && Vector2.Distance(owner.Center, npc.Center) < MaxDistanceToPlayer) {
@@ -245,7 +241,6 @@ namespace CalamityAddon.Content.Projectiles.Minions
             return closestNPC;
         }
 
-        // ТВОЙ СТАРЫЙ МЕТОД (Позиция сбоку)
         private Vector2 GetAttackPosition(Player owner, NPC target) {
             Vector2 toTarget = target.Center - owner.Center;
             toTarget.Normalize();

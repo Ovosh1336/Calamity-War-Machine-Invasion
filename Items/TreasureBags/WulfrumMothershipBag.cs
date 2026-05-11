@@ -54,14 +54,11 @@ namespace CalamityAddon.Content.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-            // Монеты
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(
                 ModContent.NPCType<NPCs.WulfrumMothership.WulfrumMothership>()));
 
-            // Материалы и гарантированные предметы
             itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<WulfrumLRocket>(), 1, 75, 100));
 
-            // Пул оружия
             int[] weaponPool = new int[] {
                 ModContent.ItemType<WulfrumSword>(),
                 ModContent.ItemType<WulfrumLuncher>(),
@@ -70,10 +67,9 @@ namespace CalamityAddon.Content.Items.TreasureBags
             };
 
             foreach (int weaponID in weaponPool) {
-                itemLoot.Add(ItemDropRule.Common(weaponID, 2)); // Шанс 1 из 2 на каждое оружие
+                itemLoot.Add(ItemDropRule.Common(weaponID, 2));
             }
 
-            // Аксессуары из Calamity
             if (ModContent.TryFind("CalamityMod", "RoverDrive", out ModItem shield))
                 itemLoot.Add(ItemDropRule.Common(shield.Type, 3));
             if (ModContent.TryFind("CalamityMod", "WulfrumBattery", out ModItem battery))

@@ -25,15 +25,8 @@ namespace CalamityAddon.Content.Items.Weapons
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-
-            // Отключаем рисование основного спрайта в руке, 
-            // так как мы будем рисовать анимированный спрайт через DrawLayer
             Item.noUseGraphic = true; 
         }
-
-        // Теперь методы PreDrawInInventory и PreDrawInWorld НЕ НУЖНЫ, 
-        // так как основной спрайт теперь состоит из 1 кадра. Удаляем их.
-
         public override bool AltFunctionUse(Player player) => true;
 
         public override bool CanUseItem(Player player)
@@ -97,7 +90,6 @@ namespace CalamityAddon.Content.Items.Weapons
         public override void OnEnterWorld() => hitCounter = 0;
     }
 
-    // --- ОТРИСОВКА В РУКЕ ---
     public class WulfrumSwordDrawLayer : PlayerDrawLayer
     {
         public override Position GetDefaultPosition() => new AfterParent(PlayerDrawLayers.HeldItem);
@@ -112,10 +104,8 @@ namespace CalamityAddon.Content.Items.Weapons
 
             WulfrumSwordPlayer modPlayer = drawPlayer.GetModPlayer<WulfrumSwordPlayer>();
 
-            // ВАЖНО: Загружаем отдельную текстуру для анимации (с суффиксом _Held)
-            // Убедитесь, что файл "WulfrumSword_Held.png" лежит в той же папке
             string texturePath = item.ModItem.Texture + "_Held"; 
-            if (!ModContent.HasAsset(texturePath)) return; // Защита от вылета
+            if (!ModContent.HasAsset(texturePath)) return;
 
             Texture2D texture = ModContent.Request<Texture2D>(texturePath).Value;
 

@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent.Bestiary;
 using Terraria;
 using Terraria.ID;
@@ -7,16 +6,12 @@ using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.Localization;
 using Terraria.GameContent.ItemDropRules;
-using ReLogic.Content;
 using System.Collections.Generic;
-using CalamityAddon.Content;
 using CalamityAddon.Content.Gores.Wulfrum;
 using CalamityAddon.Content.Utilities;
 using CalamityAddon.Content.BossBars;
 using CalamityAddon.Content.Projectiles;
 using CalamityAddon.Content.Particles;
-using CalamityAddon.Content.NPCs;
-using CalamityAddon.Content.Items.Materials;
 using CalamityAddon.Content.Items.Ammo;
 using CalamityAddon.Content.Items.Placeables.Furniture.BossRelics;
 using CalamityAddon.Content.Items.LoreItems;
@@ -33,7 +28,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
         private int ChargeRadius = 0;
         private bool phase2Triggered = false;
 
-        // === СПАМ-МОБАМИ ===
+        // === MOBS SPAWN ===
         private int phase2SpawnTimer = 0;
         private int wormSpawnTimer = 0;
 
@@ -56,7 +51,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
         public override void FindFrame(int frameHeight)
         {
-            bool isSecondPhase = NPC.life < NPC.lifeMax * 0.6f;
+            bool isSecondPhase = NPC.life < NPC.lifeMax * 0.7f;
             if (isSecondPhase)
                 NPC.frame.Y = frameHeight;
             else
@@ -162,10 +157,9 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             }
 
             // === ФАЗЫ ===
-            bool isSecondPhase = NPC.life < NPC.lifeMax * 0.6f;
-
+            bool isSecondPhase = NPC.life < NPC.lifeMax * 0.7f;
             bool isHardDifficulty = Main.masterMode || IsRevengeance() || IsDeath();
-            bool isThirdPhase = isHardDifficulty && NPC.life < NPC.lifeMax * 0.35f;
+            bool isThirdPhase = isHardDifficulty && NPC.life < NPC.lifeMax * 0.4f;
 
             // === ПЕРЕХОД ВО ВТОРУЮ ФАЗУ ===
             if (isSecondPhase && !phase2Triggered)
@@ -251,7 +245,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
 
             int cooldown = isSecondPhase ? 120 : 240;
-            float moveSpeed = isSecondPhase ? 10f : 7f;
+            float moveSpeed = isSecondPhase ? 12f : 9f;
             float inertia = isSecondPhase ? 20f : 25f;
 
             int rocketTimeBetweenShots = isSecondPhase ? 20 : 25;
@@ -503,7 +497,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
                 float subphaseTime = timer - (prepTime + pauseTime);
                 float direction = NPC.ai[2];
                 Vector2 swoopVelocity = Vector2.UnitY.RotatedBy(MathHelper.Pi * subphaseTime / swoopDuration * -direction);
-                float speed = isSecondPhase ? 20f : 15f;
+                float speed = isSecondPhase ? 25f : 15f;
                 swoopVelocity *= speed;
                 swoopVelocity.Y *= 0.5f;
                 NPC.velocity = Vector2.Lerp(NPC.velocity, swoopVelocity, 0.2f);
@@ -545,7 +539,6 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
                 }
             }
 
-            // Только сервер/синглплеер применяет суперзаряд
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
 
@@ -747,7 +740,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
                 npcLoot.Add(ItemDropRule.Common(wulfrumMetalScrap.Type, 1, 20, 40));
             
             if (ModContent.TryFind("CalamityMod", "EnergyCore", out ModItem energyCore))
-                npcLoot.Add(ItemDropRule.Common(energyCore.Type, 1, 3, 6));
+                npcLoot.Add(ItemDropRule.Common(energyCore.Type, 1, 4, 8));
 
             npcLoot.Add(ItemDropRule.ByCondition(new MasterOrRevengeanceCondition(), ModContent.ItemType<WulfrumMothershipRelic>()));
             

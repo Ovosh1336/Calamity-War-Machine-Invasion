@@ -8,10 +8,8 @@ namespace CalamityAddon.Content.Utilities
 {
     public static class DropHelper
     {
-        // Берем готовый текст первого убийства прямо из локализации Calamity
         public static LocalizedText FirstKillText => Language.GetText("Mods.CalamityMod.DropConditions.FirstKill");
 
-        // Метод для добавления лута, который падает каждому игроку при условии
         public static IItemDropRule AddConditionalPerPlayer(this NPCLoot npcLoot, Func<bool> condition, int itemID, string desc = "")
         {
             var rule = new DropPerPlayerOnThePlayer(itemID, 1, 1, 1, new FuncDropCondition(condition, desc));
@@ -20,7 +18,6 @@ namespace CalamityAddon.Content.Utilities
         }
     }
 
-    // Само условие
     public class FuncDropCondition : IItemDropRuleCondition
     {
         private readonly Func<bool> _condition;

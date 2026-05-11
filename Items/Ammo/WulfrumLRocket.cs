@@ -6,11 +6,6 @@ namespace CalamityAddon.Content.Items.Ammo
 {
     public class WulfrumLRocket : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            // DisplayName и Tooltip лучше задать через локализацию
-        }
-
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -25,7 +20,6 @@ namespace CalamityAddon.Content.Items.Ammo
 
             // Тип боеприпаса
             Item.ammo = ModContent.ItemType<WulfrumLRocket>();
-            // Какой снаряд вылетает, когда оружие использует этот боеприпас
             Item.shoot = ModContent.ProjectileType<Projectiles.WulfrumLRocketProj>();
             Item.shootSpeed = 7f;
 

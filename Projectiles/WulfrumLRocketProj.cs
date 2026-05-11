@@ -42,7 +42,6 @@ namespace CalamityAddon.Content.Projectiles
             }
             else if (Projectile.ai[0] < HomingDuration) // Наведение работает только первые 2.5 секунды
             {
-                // Ищем ближайшего ВРАГА (NPC, а не игрока)
                 NPC target = FindClosestNPC();
                 if (target != null && target.CanBeChasedBy())
                 {
@@ -55,9 +54,7 @@ namespace CalamityAddon.Content.Projectiles
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, toTarget * desiredSpeed, homingStrength);
                 }
             }
-            // После 2.5 секунд ракета летит прямо без наведения
-            
-            // Проверяем столкновение с врагами
+
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
@@ -89,11 +86,10 @@ namespace CalamityAddon.Content.Projectiles
             }
         }
 
-        // Функция поиска ближайшего врага
         private NPC FindClosestNPC()
         {
             NPC closestNPC = null;
-            float closestDistance = 800f; // Радиус поиска
+            float closestDistance = 800f; 
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {

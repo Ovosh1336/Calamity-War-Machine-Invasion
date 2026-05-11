@@ -12,7 +12,6 @@ namespace CalamityAddon.Content.Items.Weapons
     {
         public override void SetDefaults()
         {
-            // Базовые параметры оружия
             Item.damage = 16;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 16;
@@ -28,14 +27,12 @@ namespace CalamityAddon.Content.Items.Weapons
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = false;
 
-            // Параметры призыва
             Item.shoot = ModContent.ProjectileType<WulfrumTurret>();
             Item.buffType = ModContent.BuffType<WulfrumTurretBuff>();
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            // Спавн рядом с игроком
             position = player.Center;
             velocity = Vector2.Zero;
         }
@@ -47,10 +44,8 @@ namespace CalamityAddon.Content.Items.Weapons
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // Добавляем бафф
             player.AddBuff(Item.buffType, 2);
 
-            // Создаём турель
             var projectile = Projectile.NewProjectileDirect(
                 source,
                 position,

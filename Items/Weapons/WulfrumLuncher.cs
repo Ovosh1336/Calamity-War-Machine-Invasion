@@ -8,11 +8,6 @@ namespace CalamityAddon.Content.Items.Weapons
 {
     public class WulfrumLuncher : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            // DisplayName и Tooltip лучше задать через локализацию
-        }
-
         public override void SetDefaults()
         {
             Item.width = 60;
