@@ -11,7 +11,6 @@ namespace CalamityAddon.Content
         {
             if (Main.masterMode) return true;
 
-            // Проверяем месть из Calamity
             if (ModLoader.TryGetMod("CalamityMod", out Mod calamity))
             {
                 var calWorldType = calamity.Code.GetType("CalamityMod.World.CalamityWorld");
