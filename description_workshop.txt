@@ -12,13 +12,15 @@ This is a small addon for the Calamity Mod, designed to expand pre-Hardmode game
 Mechanism Warfare — by Digidonix
 
 [b]Future Plans: [/b]
-I plan to add more weapons, items, and accessories in future updates.
+We plan to add more weapons, items, and accessories in future updates.
 
-[u]A Note from the Developer: [/u]
-[i]This is my very first project, so please go easy on me![/i]
-[i]If you have any suggestions for improvements, ideas for new content, or if you simply enjoyed the mod, please leave your feedback in the comments.[/i]
+[u]A Note from the Developers: [/u]
+[i]This is our first project. Thanks for playing! - [b]Calamity WMI team[/b][/i]
+[i]If you have any suggestions for improvements, ideas for new content, or if you simply enjoyed the mod, please, leave your feedback in the comments or our discord server.[/i]
 
 [u]Links:[/u]
 GitHub - [url=https://github.com/dakk2662-cyber/Calamity-War-Machine-Invasion][/url]
+Discord - [url=https://discord.gg/gu7v7Adgvw][/url]
+Mod Wiki - [url=https://terrariamods.wiki.gg/wiki/Calamity:_War_Machine_Invasion][/url]
 
-[b]Stay tuned for more!
+[b]Stay tuned for more![/b]
