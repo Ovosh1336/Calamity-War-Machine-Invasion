@@ -11,7 +11,7 @@ namespace CalamityAddon.Content.Items.Weapons
     {
         public override void SetDefaults()
         {
-            Item.damage = 24;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 18;
             Item.width = 28;

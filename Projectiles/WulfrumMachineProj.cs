@@ -10,17 +10,18 @@ namespace CalamityAddon.Content.Projectiles
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 5;
+            ProjectileID.Sets.Explosive[Type] = true;
+            ProjectileID.Sets.RocketsSkipDamageForPlayers[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 30;
-            Projectile.height = 30;
+            Projectile.width = 26;
+            Projectile.height = 26;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.timeLeft = 300;
-            Projectile.tileCollide = true;
         }
 
         public override void OnSpawn(Terraria.DataStructures.IEntitySource source)
@@ -30,6 +31,10 @@ namespace CalamityAddon.Content.Projectiles
 
         public override void AI()
         {
+            if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3)
+            {
+                Projectile.PrepareBombToBlow();
+            }
             Projectile.rotation += Projectile.velocity.X * 0.05f;
 
             Projectile.velocity.Y += 0.2f;
@@ -45,10 +50,17 @@ namespace CalamityAddon.Content.Projectiles
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            return true; 
+            Projectile.velocity *= 0f; 
+            Projectile.timeLeft = 3; 
+            return false;
         }
-
-        public override void Kill(int timeLeft)
+        public override void PrepareBombToBlow()
+        {
+            Projectile.tileCollide = false;
+            Projectile.alpha = 255; 
+            Projectile.Resize(120, 120);
+        }
+        public override void OnKill(int timeLeft)
         {
             Terraria.Audio.SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
 
@@ -69,21 +81,11 @@ namespace CalamityAddon.Content.Projectiles
             for (int g = 0; g < randomGoreCount; g++)
             {
                 int index = Main.rand.Next(1, 11);
-                if (ModContent.TryFind<ModGore>("CalamityMod", "WulfrumEnemyGore" + index, out ModGore calGore))
+                if (ModContent.TryFind("CalamityMod", "WulfrumEnemyGore" + index, out ModGore calGore))
                 {
                     Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.5f + Main.rand.NextVector2Circular(3f, 3f), calGore.Type, 1f);
                 }
             }
-
-            Vector2 oldCenter = Projectile.Center;
-            Projectile.width = 120; 
-            Projectile.height = 120;
-            Projectile.Center = oldCenter;
-
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            
-            Projectile.Damage(); 
         }
     }
 }

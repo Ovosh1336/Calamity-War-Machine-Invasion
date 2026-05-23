@@ -17,8 +17,8 @@ namespace CalamityAddon.Content.Items.Weapons
             Item.DamageType = DamageClass.Melee;
             Item.width = 62;
             Item.height = 66;
-            Item.useTime = 45;
-            Item.useAnimation = 45;
+            Item.useTime = 40;
+            Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 8;
             Item.value = Item.buyPrice(silver: 1);

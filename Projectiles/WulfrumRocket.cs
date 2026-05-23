@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace CalamityAddon.Content.Projectiles
 {
@@ -16,7 +17,7 @@ namespace CalamityAddon.Content.Projectiles
         {
             Projectile.width = 26;
             Projectile.height = 10;
-            Projectile.aiStyle = 0;
+            Projectile.aiStyle = -1;
             Projectile.friendly = false;
             Projectile.hostile = true;
             Projectile.tileCollide = true;
@@ -32,6 +33,8 @@ namespace CalamityAddon.Content.Projectiles
             Lighting.AddLight(Projectile.Center, 0.1f, 0.5f, 0.1f);
 
             Projectile.ai[0]++;
+            
+            float desiredSpeed = 9f;
 
             if (Projectile.ai[0] < 20f)
             {
@@ -47,12 +50,21 @@ namespace CalamityAddon.Content.Projectiles
                 if (target != null && target.active && !target.dead)
                 {
                     Vector2 toTarget = (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
-
                     float homingStrength = 0.08f;
-                    float desiredSpeed = 9f;
-
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, toTarget * desiredSpeed, homingStrength);
                 }
+
+                Vector2 offsetVector = new Vector2(-Projectile.velocity.Y, Projectile.velocity.X).SafeNormalize(Vector2.Zero);
+                        
+                float waveFrequency = 0.25f; // Частота
+                float waveAmplitude = 1.05f; // Амплитуда
+                        
+                Projectile.velocity += offsetVector * (float)Math.Sin(Projectile.ai[0] * waveFrequency) * waveAmplitude;
+            }
+            
+            if (Projectile.velocity.Length() > desiredSpeed + 2f) 
+            {
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * desiredSpeed;
             }
 
             for (int i = 0; i < Main.maxPlayers; i++)
@@ -65,6 +77,7 @@ namespace CalamityAddon.Content.Projectiles
                 }
             }
 
+            // Анимация кадров
             frameCounter++;
             if (frameCounter >= 5)
             {
@@ -88,17 +101,20 @@ namespace CalamityAddon.Content.Projectiles
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            Projectile.Kill();
+            Projectile.velocity *= 0f; 
+            Projectile.timeLeft = 3; 
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Explode();
         }
 
         private void Explode()
         {
+            Terraria.Audio.SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+
             for (int i = 0; i < 20; i++)
             {
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke,
@@ -111,8 +127,6 @@ namespace CalamityAddon.Content.Projectiles
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch,
                     dustVel.X, dustVel.Y, 100, default, 1.5f);
             }
-
-            Terraria.Audio.SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
         }
     }
 }

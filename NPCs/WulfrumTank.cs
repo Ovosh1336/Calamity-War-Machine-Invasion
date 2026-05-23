@@ -20,7 +20,7 @@ namespace CalamityAddon.Content.NPCs
 {
     public class WulfrumTank : ModNPC
     {       
-        public const float MaxMovementSpeedX = 3.0f;
+        public const float MaxMovementSpeedX = 3f;
 
         public override void SetStaticDefaults()
         {
@@ -87,7 +87,7 @@ namespace CalamityAddon.Content.NPCs
             if (NPC.target >= 0 && NPC.target < Main.maxPlayers)
                 player = Main.player[NPC.target];
 
-            bool playerNearby = player.active && !player.dead && Vector2.Distance(NPC.Center, player.Center) < 600f;
+            bool playerNearby = player.active && !player.dead && Vector2.Distance(NPC.Center, player.Center) < 1200f;
 
             if (!playerNearby)
             {

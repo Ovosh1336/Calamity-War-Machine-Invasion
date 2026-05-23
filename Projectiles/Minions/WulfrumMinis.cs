@@ -10,6 +10,8 @@ namespace CalamityAddon.Content.Projectiles.Minions
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.Explosive[Type] = true;
+            ProjectileID.Sets.RocketsSkipDamageForPlayers[Type] = true;
         }
 
         public override void SetDefaults()
@@ -18,9 +20,8 @@ namespace CalamityAddon.Content.Projectiles.Minions
             Projectile.height = 12;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Summon;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.timeLeft = 300;
-            Projectile.tileCollide = true;
         }
 
         public override void OnSpawn(Terraria.DataStructures.IEntitySource source)
@@ -30,6 +31,10 @@ namespace CalamityAddon.Content.Projectiles.Minions
 
         public override void AI()
         {
+            if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3)
+            {
+                Projectile.PrepareBombToBlow();
+            }
             Projectile.rotation += Projectile.velocity.X * 0.05f;
 
             Projectile.velocity.Y += 0.1f;
@@ -45,10 +50,18 @@ namespace CalamityAddon.Content.Projectiles.Minions
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            return true; 
+            Projectile.velocity *= 0f; 
+            Projectile.timeLeft = 3; 
+            return false;
+        }
+        public override void PrepareBombToBlow()
+        {
+            Projectile.tileCollide = false;
+            Projectile.alpha = 255; 
+            Projectile.Resize(90, 90);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Terraria.Audio.SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
 
@@ -72,16 +85,6 @@ namespace CalamityAddon.Content.Projectiles.Minions
                 Main.dust[dustIndex].velocity *= 3f;
                 Main.dust[dustIndex].scale = 1.2f;
             }
-
-            Vector2 oldCenter = Projectile.Center;
-            Projectile.width = 90; 
-            Projectile.height = 90;
-            Projectile.Center = oldCenter;
-
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            
-            Projectile.Damage(); 
         }
     }
 }

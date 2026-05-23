@@ -246,7 +246,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
             int cooldown = isSecondPhase ? 120 : 240;
             float moveSpeed = isSecondPhase ? 12f : 9f;
-            float inertia = isSecondPhase ? 20f : 25f;
+            float inertia = isSecondPhase ? 20f : 24f;
 
             int rocketTimeBetweenShots = isSecondPhase ? 20 : 25;
             int rocketShotsCount = 5;

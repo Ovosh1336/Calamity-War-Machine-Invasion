@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace CalamityAddon.Content.Projectiles
 {
@@ -16,7 +17,7 @@ namespace CalamityAddon.Content.Projectiles
         {
             Projectile.width = 26;
             Projectile.height = 10;
-            Projectile.aiStyle = 0;
+            Projectile.aiStyle = -1; 
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.tileCollide = true;
@@ -25,13 +26,15 @@ namespace CalamityAddon.Content.Projectiles
         }
         
         private int frameCounter = 0;
-        private const float HomingDuration = 170f;
+        private const float HomingDuration = 180f;
 
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.1f, 0.5f, 0.1f);
 
             Projectile.ai[0]++;
+
+            float desiredSpeed = 8f;
 
             if (Projectile.ai[0] < 20f)
             {
@@ -40,31 +43,30 @@ namespace CalamityAddon.Content.Projectiles
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 3f;
                 }
             }
-            else if (Projectile.ai[0] < HomingDuration) // Наведение работает только первые 2.5 секунды
+            else 
             {
-                NPC target = FindClosestNPC();
-                if (target != null && target.CanBeChasedBy())
+                if (Projectile.ai[0] < HomingDuration)
                 {
-                    Vector2 toTarget = target.Center - Projectile.Center;
-                    toTarget.Normalize();
-
-                    float homingStrength = 0.08f;
-                    float desiredSpeed = 8f;
-
-                    Projectile.velocity = Vector2.Lerp(Projectile.velocity, toTarget * desiredSpeed, homingStrength);
+                    NPC target = FindClosestNPC();
+                    if (target != null && target.CanBeChasedBy())
+                    {
+                        Vector2 toTarget = (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
+                        float homingStrength = 0.08f;
+                        Projectile.velocity = Vector2.Lerp(Projectile.velocity, toTarget * desiredSpeed, homingStrength);
+                    }
                 }
+
+                Vector2 offsetVector = new Vector2(-Projectile.velocity.Y, Projectile.velocity.X).SafeNormalize(Vector2.Zero);
+                
+                float waveFrequency = 0.25f; // Частота
+                float waveAmplitude = 1.05f; // Амплитуда
+                
+                Projectile.velocity += offsetVector * (float)Math.Sin(Projectile.ai[0] * waveFrequency) * waveAmplitude;
+
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * desiredSpeed;
             }
 
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC npc = Main.npc[i];
-                if (npc.active && !npc.friendly && !npc.dontTakeDamage && Projectile.Hitbox.Intersects(npc.Hitbox))
-                {
-                    //Projectile.Kill();
-                    break;
-                }
-            }
-            
+            // Анимация кадров
             frameCounter++;
             if (frameCounter >= 5)
             {
@@ -78,10 +80,10 @@ namespace CalamityAddon.Content.Projectiles
 
             Projectile.rotation = Projectile.velocity.ToRotation();
 
-            if (Main.rand.NextBool(2)) // 50% шанс каждый кадр
+            if (Main.rand.NextBool(2))
             {
                 int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1f);
-                Main.dust[dust].velocity *= 0.5f; // Дым отстает от снаряда
+                Main.dust[dust].velocity *= 0.5f;
                 Main.dust[dust].noGravity = true;
             }
         }
@@ -109,17 +111,20 @@ namespace CalamityAddon.Content.Projectiles
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            Projectile.Kill();
+            Projectile.velocity *= 0f; 
+            Projectile.timeLeft = 3; 
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Explode();
         }
-
+ 
         private void Explode()
         {
+            Terraria.Audio.SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            
             for (int i = 0; i < 20; i++)
             {
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 
@@ -132,8 +137,6 @@ namespace CalamityAddon.Content.Projectiles
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 
                             dustVel.X, dustVel.Y, 100, default, 1.5f);
             }
-
-            Terraria.Audio.SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
         }
     }
 }
