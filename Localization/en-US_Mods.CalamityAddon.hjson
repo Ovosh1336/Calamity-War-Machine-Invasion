@@ -19,7 +19,11 @@ Items: {
 
 	WulfrumLRocket: {
 		DisplayName: Wulfrum Rocket
-		Tooltip: With auto-aim
+		Tooltip:
+			'''
+			Don't destroy blocks
+			[c/83B87E:'With auto-aim']
+			'''
 	}
 
 	WulfrumLuncher: {
@@ -58,6 +62,7 @@ Items: {
 
 	Lore: {
 		LoreWulfrumMothership: {
+			DisplayName: Lore (Wulfrum Mothership)
 			Tooltip:
 				'''
 				During the war, these majestic machines were in peak condition, 
@@ -65,7 +70,6 @@ Items: {
 				Even though these Wulfrum Motherships have long since rusted over, 
 				They remain a formidable foe to this day, still protected by lesser wulfrum creations.
 				'''
-			DisplayName: Lore (Wulfrum Mothership)
 		}
 	}
 
@@ -87,6 +91,11 @@ Items: {
 			[c/83B87E:'So powerful and cute!']
 			'''
 	}
+
+	UnstableCore: {
+		DisplayName: Unstable Core
+		Tooltip: ""
+	}
 }
 
 NPCs: {
@@ -106,12 +115,17 @@ NPCs: {
 
 	WulfrumMothership: {
 		DisplayName: Wulfrum Mothership
-		Bestiary: A massive mothership that coordinates the actions of Wulfrum machines. Armed with homing missiles and a shield generator, it can also charge other Wulfrum machines.
+		Bestiary: A massive mothership that coordinates the actions of Wulfrum machines. Armed with homing missiles and a mini-factory, it can also charge other Wulfrum machines.
 		SpawnInfo: Use a [i:CalamityAddon/WulfrumHeart] during the day on the surface.
 		DespawnMessage: The Wulfrum Mothership has retreated...
 	}
 
 	WulfrumShield.DisplayName: Wulfrum Mothership
+
+	WulfrumBomber: {
+		DisplayName: Wulfrum Bomber
+		Bestiary: Initially, the Wulfrum bombers were designed to transport various heavy cargoes by air, but when the war began, they were easily converted to carry and drop small bombs. When these appeared, the enemy fled.
+	}
 }
 
 Projectiles: {
@@ -120,6 +134,7 @@ Projectiles: {
 	WulfrumMachineProj.DisplayName: Wulfrum Machine
 	WulfrumTurret.DisplayName: Wulfrum Turret
 	WulfrumMinis.DisplayName: Wulfrum Minis
+	WulfrumMinisEnemy.DisplayName: Wulfrum Minis Enemy
 }
 
 Buffs: {

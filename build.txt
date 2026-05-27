@@ -1,5 +1,5 @@
 displayName = Calamity: War Machine Invasion
-author = dakk2662
-version = 0.1.5
+author = Calamity WMI team
+version = 0.1.5.3
 
-dependencies = "required:CalamityMod"
+modReferences = CalamityMod
