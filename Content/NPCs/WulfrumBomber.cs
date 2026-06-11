@@ -1,5 +1,6 @@
 //WulfrumBomber
 
+using CalamityAddon.Content.Items.Placeables.Banners;
 using System;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -28,7 +29,7 @@ namespace CalamityAddon.Content.NPCs
             NPC.height = 50;
             NPC.damage = 5;
             NPC.defense = 6;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 42;
             NPC.HitSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumHit", 3);
             NPC.DeathSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumDeath");
             NPC.value = Item.buyPrice(0, 0, 1, 20);
@@ -36,6 +37,10 @@ namespace CalamityAddon.Content.NPCs
             NPC.aiStyle = -1;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
+
+            Banner = Type;
+            BannerItem = ModContent.ItemType<WulfrumBomberBanner>();
+            ItemID.Sets.KillsToBanner[BannerItem] = 50;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -62,22 +67,19 @@ namespace CalamityAddon.Content.NPCs
                 Lighting.AddLight(NPC.Center, 0.3f, 0.8f, 0.2f);
             }
 
-            // ========== ЛОГИКА ПЕРЕДВИЖЕНИЯ ==========
-            NPC.ai[0]++; // Основной таймер перезарядки
+            // ========== Movement ==========
+            NPC.ai[0]++;
             float attackDelay = supercharged ? 150f : 210f;
             float hoverHeight = 170f;
             Vector2 targetPos;
 
-            // Если идет перезарядка — улетаем в сторону
             if (NPC.ai[0] < attackDelay)
             {
-                // Определяем сторону: если мы левее игрока, летим еще левее, и наоборот
                 float retreatSide = (NPC.Center.X < player.Center.X) ? -1f : 1f;
-                targetPos = player.Center + new Vector2(retreatSide * 600f, -hoverHeight - 100f);
+                targetPos = player.Center + new Vector2(retreatSide * 500f, -hoverHeight - 100f);
             }
             else
             {
-                // Если перезарядились — возвращаемся к игроку для захода на цель
                 float horizontalOffset = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.2f) * 190f;
                 targetPos = player.Center + new Vector2(horizontalOffset, -hoverHeight);
             }
@@ -92,8 +94,7 @@ namespace CalamityAddon.Content.NPCs
             NPC.spriteDirection = (NPC.velocity.X > 0) ? 1 : -1;
             NPC.rotation = NPC.velocity.X * 0.05f;
 
-            // ========== ЛОГИКА АТАКИ ==========
-            // Условие сброса: перезарядка завершена и X-координата близка к игроку
+            // ========== Attack ==========
             if (NPC.ai[0] >= attackDelay && Math.Abs(NPC.Center.X - player.Center.X) < 30f)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -105,11 +106,10 @@ namespace CalamityAddon.Content.NPCs
                         NPC.ai[1] = 25f;
                     }
                 }
-                NPC.ai[0] = 0; // Сброс таймера перезарядки (теперь он начнет улетать)
+                NPC.ai[0] = 0;
                 NPC.netUpdate = true;
             }
 
-            // Логика интервала для второй бомбы при Supercharge
             if (NPC.ai[1] > 0)
             {
                 NPC.ai[1]--;
@@ -123,7 +123,7 @@ namespace CalamityAddon.Content.NPCs
 
         private void DropBomb(int damage)
         {
-            int projectileType = ModContent.ProjectileType<WulfrumMinisEnemy>();
+            int projectileType = ModContent.ProjectileType<WulfrumBigis>();
             Vector2 bombVel = new Vector2(NPC.velocity.X * 0.2f, 3f);
             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0, 10), bombVel, projectileType, damage, 0f, Main.myPlayer);
 

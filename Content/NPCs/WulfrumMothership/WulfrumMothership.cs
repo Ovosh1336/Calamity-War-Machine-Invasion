@@ -9,7 +9,6 @@ using Terraria.GameContent.ItemDropRules;
 using System.Collections.Generic;
 using CalamityAddon.Content.Gores.Wulfrum;
 using CalamityAddon.Content.Utilities;
-using CalamityAddon.Content.BossBars;
 using CalamityAddon.Content.Projectiles;
 using CalamityAddon.Content.Particles;
 using CalamityAddon.Content.Items.Ammo;
@@ -19,7 +18,7 @@ using System.IO;
 
 namespace CalamityAddon.Content.NPCs.WulfrumMothership
 {
-    [AutoloadBossHead]
+    //[AutoloadBossHead]
     public class WulfrumMothership : ModNPC
     {
         // === SUPERCHARGE ===
@@ -30,14 +29,19 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
         // === MOBS SPAWN ===
         private int phase2SpawnTimer = 0;
-        private int wormSpawnTimer = 0;
+        private int phase3SpawnTimer = 0;
+
+        public static int Phase1HeadSlot;
+        public static int Phase2HeadSlot;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 2;
+            NPCID.Sets.BossBestiaryPriority.Add(Type);
 
-            NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Confused] = true;
             NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Poisoned] = true;
+            NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Electrified] = false;
+            NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Confused] = true;
 
             var drawModifier = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -58,6 +62,24 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
                 NPC.frame.Y = 0;
         }
 
+        public override void Load()
+        {
+            Phase1HeadSlot = Mod.AddBossHeadTexture("CalamityAddon/Content/NPCs/WulfrumMothership/WulfrumMothership_Head_P1");
+            Phase2HeadSlot = Mod.AddBossHeadTexture("CalamityAddon/Content/NPCs/WulfrumMothership/WulfrumMothership_Head_P2");
+        }
+        public override void BossHeadSlot(ref int index)
+        {
+            if (phase2Triggered)
+            {
+                index = Phase2HeadSlot;
+            }
+            else
+            {
+                index = Phase1HeadSlot;
+            }
+        }
+
+
         public override void SetDefaults()
         {
             NPC.width = 88;
@@ -76,8 +98,6 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             NPC.boss = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-
-            NPC.BossBar = ModContent.GetInstance<BossBarWulfrumMothership>();
 
             if (!Main.dedServ) {
                 Music = MusicLoader.GetMusicSlot(Mod, "Content/Sounds/Music/MechanismWarfare");
@@ -98,7 +118,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(phase2SpawnTimer);
-            writer.Write(wormSpawnTimer);
+            writer.Write(phase3SpawnTimer);
             writer.Write(phase2Triggered);
             writer.Write(phase3Triggered);
         }
@@ -106,7 +126,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             phase2SpawnTimer = reader.ReadInt32();
-            wormSpawnTimer = reader.ReadInt32();
+            phase3SpawnTimer = reader.ReadInt32();
             phase2Triggered = reader.ReadBoolean();
             phase3Triggered = reader.ReadBoolean();
         }
@@ -163,7 +183,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
             // === ПЕРЕХОД ВО ВТОРУЮ ФАЗУ ===
             if (isSecondPhase && !phase2Triggered)
-            {
+            {   
                 phase2Triggered = true;
                 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -227,10 +247,10 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
             if (isThirdPhase)
             {
-                wormSpawnTimer++;
-                if (wormSpawnTimer >= 1500)
+                phase3SpawnTimer++;
+                if (phase3SpawnTimer >= 1500)
                 {
-                    wormSpawnTimer = 0;
+                    phase3SpawnTimer = 0;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         SpawnPhase3Worms();
@@ -240,7 +260,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             }
             else
             {
-                wormSpawnTimer = 0;
+                phase3SpawnTimer = 0;
             }
 
 
@@ -260,10 +280,11 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
 
             Player player = Main.player[NPC.target];
 
-            if (player.dead)
+            if (player.dead || !Main.dayTime) // Добавлено !Main.dayTime
             {
-                NPC.velocity.Y -= 0.1f;
+                NPC.velocity.Y -= 0.4f;
                 NPC.EncourageDespawn(10);
+                NPC.ai[0] = 0;
                 return;
             }
 
@@ -410,6 +431,7 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             Player player = Main.player[NPC.target];
 
             List<int> possibleMobs = new List<int>();
+            //possibleMobs.Add(ModContent.NPCType<WulfrumBomber>());
             if (ModLoader.TryGetMod("CalamityMod", out Mod calamity))
             {
                 if (calamity.TryFind<ModNPC>("WulfrumDrone", out ModNPC drone)) possibleMobs.Add(drone.Type);
@@ -643,7 +665,6 @@ namespace CalamityAddon.Content.NPCs.WulfrumMothership
             
             List<int> possibleMobs = new List<int>();
             possibleMobs.Add(ModContent.NPCType<WulfrumTank>());
-            
             if (ModLoader.TryGetMod("CalamityMod", out Mod calamity))
             {
                 if (calamity.TryFind<ModNPC>("WulfrumRover", out ModNPC rover)) possibleMobs.Add(rover.Type);

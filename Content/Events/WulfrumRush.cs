@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Audio;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityAddon.Content.NPCs.WulfrumMothership;
-using CalamityMod.NPCs.NormalNPCs;
+using CalamityAddon.Content.NPCs.WulfrumJumper;
+using Terraria.Chat;
 
 namespace CalamityAddon.Content.Events
 {
@@ -17,108 +13,126 @@ namespace CalamityAddon.Content.Events
     {
         public static bool isInvasionActive = false;
         public static int invasionKills = 0;
-        public static int invasionMaxProgress = 150;
+        public static int invasionMaxProgress = 100;
         public const int CustomInvasionType = -67;
 
-        //private bool AmplifiersSpawned = false;
-        //private bool AmplifiersSpawned2 = false;
+        private static bool AmplifiersSpawned = false;
+
+        // Синхронизация данных между игроками
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(isInvasionActive);
+            writer.Write(invasionKills);
+            writer.Write(AmplifiersSpawned);
+        }
+
+        public override void NetReceive(BinaryReader reader)
+        {
+            isInvasionActive = reader.ReadBoolean();
+            invasionKills = reader.ReadInt32();
+            AmplifiersSpawned = reader.ReadBoolean();
+        }
 
         public override void PostUpdateInvasions()
         {
             if ((Main.invasionType != 0 && Main.invasionType != CustomInvasionType) || Main.pumpkinMoon || Main.snowMoon) return;
+
             if (isInvasionActive)
             {
                 UpdateInvasion();
             }
-            //else
-            //{
-            //TryStartInvasion();
-            //}
         }
-
-        //        private void TryStartInvasion()
-        //        {
-        //            bool playerHasEnoughHP = false;
-        //            foreach (Player player in Main.player)
-        //            {
-        //                if (player.active && player.statLifeMax2 > 200)
-        //                {
-        //                    playerHasEnoughHP = true;
-        //                    break;
-        //                }
-        //            }
-        //            if (!playerHasEnoughHP) return;
-        //
-        //            if (Main.rand.NextBool(108000))
-        //            {
-        //                StartInvasion();
-        //            }
-        //        }
 
         public static void StartInvasion()
         {
+            if (Main.netMode == NetmodeID.MultiplayerClient) return;
+
             isInvasionActive = true;
             invasionKills = 0;
+            AmplifiersSpawned = false;
 
             Main.invasionType = CustomInvasionType;
             Main.invasionSize = invasionMaxProgress;
             Main.invasionProgress = 0;
             Main.invasionProgressMax = invasionMaxProgress;
-            Main.invasionProgressIcon = 0;
-            Main.invasionProgressWave = 0;
             Main.invasionWarn = 600;
 
-            if (Main.netMode == 0)
-                Main.NewText("Вы чуствуете движение металла вокруг себя", 175, 75, 255);
+            string message = "Вы чувствуете движение металла вокруг себя";
+            Color color = new Color(175, 75, 255);
+
+            if (Main.netMode == NetmodeID.Server)
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(message), color);
+            else
+                Main.NewText(message, color);
+
+            if (Main.netMode == NetmodeID.Server)
+                NetMessage.SendData(MessageID.WorldData);
         }
 
         private void UpdateInvasion()
         {
             Main.invasionProgress = invasionKills;
             Main.invasionProgressMax = invasionMaxProgress;
-            Main.ReportInvasionProgress(invasionKills, invasionMaxProgress,
-                Main.invasionProgressIcon, 0);
 
-            if (invasionKills == 50) //&& !AmplifiersSpawned)
+            if (Main.netMode != NetmodeID.Server)
             {
-                Player player = Main.LocalPlayer;
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumAmplifier>());
-                //AmplifiersSpawned = true;
+                Main.ReportInvasionProgress(invasionKills, invasionMaxProgress, Main.invasionProgressIcon, 0);
             }
-            if (invasionKills == 100) //&& !AmplifiersSpawned2)
+
+            // Спавн Усилителя на 50% прогресса
+            if (Main.netMode != NetmodeID.MultiplayerClient && invasionKills >= 50 && !AmplifiersSpawned)
             {
-                Player player = Main.LocalPlayer;
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumAmplifier>());
-                //AmplifiersSpawned2 = true;
+                int targetPlayer = Player.FindClosest(new Vector2(Main.maxTilesX / 2, Main.maxTilesY / 2) * 16, 0, 0);
+                if (targetPlayer != -1)
+                {
+                    NPC.SpawnOnPlayer(targetPlayer, ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumAmplifier>());
+                    AmplifiersSpawned = true;
+                    if (Main.netMode == NetmodeID.Server) NetMessage.SendData(MessageID.WorldData);
+                }
             }
 
             if (invasionKills >= invasionMaxProgress)
             {
                 EndInvasion();
             }
-
         }
 
         private void EndInvasion()
         {
-            Player player = Main.LocalPlayer;
+            if (Main.netMode == NetmodeID.MultiplayerClient) return;
+
             DownedBossSystem.downedWulfrumRush = true;
             isInvasionActive = false;
             Main.invasionType = 0;
             Main.invasionSize = 0;
             Main.invasionWarn = 0;
 
-            if (player.whoAmI == Main.myPlayer)
+            string message = "Тяжелая артиллерия!";
+            Color color = new Color(50, 255, 130);
+
+            if (Main.netMode == NetmodeID.Server)
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(message), color);
+            else
+                Main.NewText(message, color);
+
+            // Поиск игрока для спавна босса
+            int targetPlayer = -1;
+            for (int i = 0; i < Main.maxPlayers; i++)
             {
-                SoundEngine.PlaySound(SoundID.Roar, player.position);
-            }
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<WulfrumMothership>());
+                if (Main.player[i].active && !Main.player[i].dead)
+                {
+                    targetPlayer = i;
+                    break;
+                }
             }
 
-            if (Main.netMode == 0)
-                Main.NewText("Тяжелая артеллерия!", 50, 255, 130);
+            if (targetPlayer != -1)
+            {
+                NPC.SpawnOnPlayer(targetPlayer, ModContent.NPCType<WulfrumJumper>());
+            }
+
+            if (Main.netMode == NetmodeID.Server)
+                NetMessage.SendData(MessageID.WorldData);
         }
     }
 }

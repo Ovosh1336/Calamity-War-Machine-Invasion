@@ -1,36 +1,64 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityAddon.Content.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
 
 namespace CalamityAddon.Content.Events
 {
     internal class WulfrumRushGlobalNPC : GlobalNPC
     {
-        public static int[] invasionMobs = { ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumDrone>(),
-                                             ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumHovercraft>(),
-                                             ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumRover>(),
-                                             ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumGyrator>()
-                                             }; //мобы в нашествии
+        public static int[] BaseInvasionMobs => new int[] {
+            ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumDrone>(),
+            ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumHovercraft>(),
+            ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumRover>(),
+            ModContent.NPCType<CalamityMod.NPCs.NormalNPCs.WulfrumGyrator>()
+        };
+
+        private bool IsInvasionMob(int type)
+        {
+            return BaseInvasionMobs.Contains(type) ||
+                   type == ModContent.NPCType<WulfrumTank>() ||
+                   type == ModContent.NPCType<WulfrumBomber>();
+        }
+
+        public override void OnKill(NPC npc)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient) return;
+
+            if (WulfrumRush.isInvasionActive)
+            {
+                if (IsInvasionMob(npc.type))
+                {
+                    WulfrumRush.invasionKills++;
+
+                    if (Main.netMode == NetmodeID.Server)
+                    {
+                        NetMessage.SendData(MessageID.WorldData);
+                    }
+                }
+            }
+        }
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
             if (WulfrumRush.isInvasionActive)
             {
                 pool.Clear();
-                foreach (int mobID in invasionMobs)
+                foreach (int mobID in BaseInvasionMobs)
                 {
                     pool.Add(mobID, 1f);
                 }
-                if(WulfrumRush.invasionKills > 100)
+
+                if (WulfrumRush.invasionKills > 50)
                 {
-                    pool.Add(ModContent.NPCType<WulfrumTank>(), 1f);
+                    pool.Add(ModContent.NPCType<WulfrumBomber>(), 0.6f);
+                }
+
+                if (WulfrumRush.invasionKills > 75)
+                {
+                    pool.Add(ModContent.NPCType<WulfrumTank>(), 0.5f);
                 }
             }
         }
@@ -39,32 +67,8 @@ namespace CalamityAddon.Content.Events
         {
             if (WulfrumRush.isInvasionActive)
             {
-                spawnRate = 60;
+                spawnRate = 75;
                 maxSpawns = 30;
-            }
-        }
-
-        public override void PostAI(NPC npc)
-        {
-            if (WulfrumRush.isInvasionActive)
-            {
-                npc.timeLeft = 1000;
-                npc.TargetClosest();
-            }
-        }
-
-        public override void OnKill(NPC npc)
-        {
-            if (WulfrumRush.isInvasionActive)
-            {
-                foreach (int mobID in invasionMobs)
-                {
-                    if (npc.type == mobID)
-                    {
-                        WulfrumRush.invasionKills++;
-                        break;
-                    }
-                }
             }
         }
     }

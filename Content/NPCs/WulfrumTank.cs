@@ -30,6 +30,9 @@ namespace CalamityAddon.Content.NPCs
                 SpriteDirection = -1
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+
+            NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Poisoned] = true;
+            NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Electrified] = false;
         }
 
         public override void SetDefaults()
@@ -40,7 +43,7 @@ namespace CalamityAddon.Content.NPCs
             NPC.width = 60;
             NPC.height = 44;
             NPC.defense = 7;
-            NPC.lifeMax = 70;
+            NPC.lifeMax = 60;
             NPC.knockBackResist = 0.3f;
             NPC.value = Item.buyPrice(0, 0, 1, 25);
             NPC.HitSound = new SoundStyle("CalamityAddon/Content/Sounds/WulfrumHit", 3);
@@ -69,7 +72,6 @@ namespace CalamityAddon.Content.NPCs
             NPC.TargetClosest(true);
             Lighting.AddLight(NPC.Center, 0.2f, 0.8f, 1f);
 
-            // === СУПЕРЗАРЯД ===
             bool supercharged = NPC.ai[3] > 0;
             if (supercharged)
             {
@@ -246,7 +248,7 @@ namespace CalamityAddon.Content.NPCs
         {
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WulfrumLRocket>(), 2, 5, 10));
             if (ModContent.TryFind("CalamityMod", "WulfrumMetalScrap", out ModItem wulfrumMetalScrap)) {
-                npcLoot.Add(ItemDropRule.Common(wulfrumMetalScrap.Type, 1, 2, 3));
+                npcLoot.Add(ItemDropRule.Common(wulfrumMetalScrap.Type, 1, 1, 2));
             if (ModContent.TryFind("CalamityMod", "EnergyCore", out ModItem energyCore)) {
                 npcLoot.Add(ItemDropRule.ByCondition(new SuperchargedCondition(), energyCore.Type, 2));
                 }
